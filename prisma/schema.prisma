@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
+
+model User {
+	id			Int			@id	@default(autoincrement())
+	email		String		@unique
+	name		String?
+	password	String
+	followedBy	Follow[]	@relation("following")
+	follower	Follow[]	@relation("follower")
+	chatManager	Chat[]		@relation("chatManager")
+	chatUser	ChatUser[]	@relation("chatUser")
+	postAuthor	Post[]		@relation("postAuthor")
+	postComment	Comment[]	@relation("postComment")
+}
+
+model Follow {
+	followingId	Int	
+	followerId	Int
+	following	User	@relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+	follower	User	@relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+
+	@@id([followingId, followerId])
+}
+
+model Chat {
+	id				Int			@id	@default(autoincrement())
+	chatManagerId	Int
+	chatUserId		Int
+	chatManager		User		@relation("chatManager", fields: [chatManagerId], references: [id], onDelete: Cascade)
+	chatUser		ChatUser[]	@relation("chatUserList")
+}
+
+model ChatUser {
+	chatId	Int		@id
+	userId	Int
+	chat	Chat	@relation("chatUserList", fields: [chatId], references: [id], onDelete: Cascade)
+	user	User	@relation("chatUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+	id			Int			@id
+	title		String
+	authorId	Int
+	content		String
+	author		User		@relation("postAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+	Commnet		Comment[]	@relation("comment")
+}
+
+model Comment {
+	id			Int	@id
+	postId		Int
+	userId		Int
+	content		String
+	commentId	Int?
+	comment		Comment?	@relation("commentRecomment", fields: [commentId], references: [id], onDelete: Cascade)
+	recomment	Comment[]	@relation("commentRecomment")
+	post		Post		@relation("comment", fields: [postId], references: [id], onDelete: Cascade)
+	user		User		@relation("postComment", fields: [userId], references: [id], onDelete: Cascade)
+}

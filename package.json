@@ -5,12 +5,15 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "concurrently \"npx tsc --watch\" \"nodemon -q index.js\"",
+		"db": "prisma migrate dev",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@prisma/client": "^5.1.1",
 		"express": "^4.18.2",
+		"prisma": "^5.1.1",
 		"ts-node": "^10.9.1"
 	},
 	"devDependencies": {
